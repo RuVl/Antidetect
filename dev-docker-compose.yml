@@ -1,0 +1,18 @@
+volumes:
+  postgres_volume:
+    name: antidetect_db
+
+services:
+  postgres:
+    image: postgres:17.6
+    restart: unless-stopped
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    env_file: postgres/.env
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: pg_isready -U $$POSTGRES_USER
+      interval: 15s
+      timeout: 5s
+      retries: 3
