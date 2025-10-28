@@ -1,12 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useScan } from '@/api/scans.ts';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useDeleteScan, useScan } from '@/api/scans.ts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card.tsx";
 import { useUser } from "@/api/users.ts";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert.tsx";
 import { Item, ItemContent, ItemGroup, ItemMedia, ItemTitle } from "@/components/ui/item.tsx";
-import { BadgeCheckIcon, Calendar, ShieldAlert, User } from "lucide-react";
+import { BadgeCheckIcon, Calendar, ShieldAlert, Trash2, User } from "lucide-react";
 import { humanizeDateTime } from "@/utils.ts";
+import { Button } from "@/components/ui/button.tsx";
 
 export const Route = createFileRoute('/scans/$id/')({
     component: RouteComponent,
@@ -14,8 +15,21 @@ export const Route = createFileRoute('/scans/$id/')({
 
 function RouteComponent() {
     const { id } = Route.useParams();
+    const navigate = useNavigate();
     const { data: scan, isLoading: scanIsLoading, error: scanError } = useScan(+id);
     const { data: user, isLoading: userIsLoading, error: userError } = scan ? useUser(scan.userId) : {};
+
+    const deleteScanMutation = useDeleteScan();
+
+    const handleDelete = () => {
+        if (!scan) return;
+
+        deleteScanMutation.mutate(scan.id, {
+            onSuccess: () => {
+                void navigate({ to: '/scans' });
+            }
+        });
+    };
 
     if (scanIsLoading || userIsLoading) {
         return (
@@ -45,8 +59,21 @@ function RouteComponent() {
     return (
         <Card className="w-full max-w-2xl mx-auto">
             <CardHeader>
-                <CardTitle>Результат сканирования</CardTitle>
-                <CardDescription>Сканирование №{scan.id}</CardDescription>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle>Результат сканирования</CardTitle>
+                        <CardDescription>Сканирование №{scan.id}</CardDescription>
+                    </div>
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleDelete}
+                        disabled={deleteScanMutation.isPending}
+                    >
+                        <Trash2 className="size-4 mr-1"/>
+                        {deleteScanMutation.isPending ? "Удаление..." : "Удалить"}
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent>
                 <ItemGroup>
