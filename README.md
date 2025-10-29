@@ -89,5 +89,21 @@ docker compose up -d
 2. Создал `Dockerfile` для frontend сервиса (работающего через nginx).
 3. Создал сервис с базой данных и `docker-compose.yml` файл.
 
+#### Anti-detect check
+
+1. Проанализировал статью, попытался повторить указанные методы в ней - ничего не получилось: использование GoLogin не удается так детектить.
+2. Искал другие способы детекции, искал подобные сайты - все проверки на похожих сайтах GoLogin (с прокси) обходит на таком же уровне как и мой повседневный браузер.
+3. Изучил что такое JA4 и проверил fingerprint'ы GoLogin и Google Chrome - они идентичныые.
+4. Сосредоточился на вычислении использования веб-драйвера. Для тестов использовал сразу 2 версии: дефолтный webdriver, предлагаемый `selenium` и
+   библиотеку [undetected webdriver](https://github.com/ultrafunkamsterdam/undetected-chromedriver).
+5. Реализовал базовые проверки на inject-кода, поиск подозрительных сигнатур и несостыковок, тест устройств и вычисления на основе этой информации fingerprint. Однако
+   задетектить undetected webdriver не удалось.
+
+##### Результат
+
+Страница определяет использование дефолтного webdriver.
+
+> Проверить fingerprint: [ja3.zone](https://ja3.zone/check), [amiunique.org](https://amiunique.org/fingerprint), [iphey.com](https://iphey.com/).
+
 ---
 #поиск_работы #тестовое #nextjs #nodejs #js #react #анти_детект 
