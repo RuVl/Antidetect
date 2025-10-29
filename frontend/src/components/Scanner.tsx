@@ -43,7 +43,7 @@ export function Scanner() {
             }));
 
             setUsername('');
-            setTimeout(() => setIsSubmitted(false), 3000);
+            setTimeout(() => setIsSubmitted(false), 5000);
         } catch (error) {
             const defaultMessage = 'Ошибка при сканировании. Попробуйте снова.';
             if (error instanceof AxiosError) {

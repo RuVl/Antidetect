@@ -1,3 +1,5 @@
+import { checkBrowser } from "@/checkBrowser.ts";
+
 export function humanizeDateTime(datetime: string) {
     const date = new Date(datetime.replace('Z', ''));  // Not working with Z at the end (UTC)
     const dateTimeFormat = new Intl.DateTimeFormat('ru', {
@@ -10,7 +12,16 @@ export function humanizeDateTime(datetime: string) {
     return dateTimeFormat.format(date);
 }
 
-// https://blog.castle.io/anti-detect-browser-analysis-how-to-detect-the-undetectable-browser/
 export async function lookForAntidetect(): Promise<boolean> {
-    return false;
+    const { isWebDriver, score, reasons, fingerprint, details } = await checkBrowser();
+
+    for (const reason of reasons) {
+        console.warn(`Suspicious: ${reason}`);
+    }
+    if (reasons.length) console.debug(`Score: ${score}`);
+
+    console.info(`Fingerprint: ${fingerprint}`);
+    console.debug(details);
+
+    return isWebDriver;
 }

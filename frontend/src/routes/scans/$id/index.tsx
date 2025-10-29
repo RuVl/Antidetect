@@ -14,9 +14,19 @@ export const Route = createFileRoute('/scans/$id/')({
 });
 
 function RouteComponent() {
-    const { id } = Route.useParams();
+    const { id: id_raw } = Route.useParams();
+    const id = parseInt(id_raw);
+    if (isNaN(id) || id < 1) {
+        return (
+            <Alert variant="destructive" className="w-full max-w-2xl mx-auto">
+                <AlertTitle>Ошибка</AlertTitle>
+                <AlertDescription>Невалидный id</AlertDescription>
+            </Alert>
+        )
+    }
+
     const navigate = useNavigate();
-    const { data: scan, isLoading: scanIsLoading, error: scanError } = useScan(+id);
+    const { data: scan, isLoading: scanIsLoading, error: scanError } = useScan(id);
     const { data: user, isLoading: userIsLoading, error: userError } = scan ? useUser(scan.userId) : {};
 
     const deleteScanMutation = useDeleteScan();
